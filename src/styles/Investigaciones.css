@@ -1,0 +1,105 @@
+.investigaciones-container {
+  font-family: sans-serif;
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.navbar {
+  background-color: #2c2f48;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  align-items: center;
+  border-radius: 8px 8px 0 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 20px;
+}
+
+.tab {
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.tab.active {
+  background-color: #1a1c2d;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  background-color: #888;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.title {
+  margin-top: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.table-wrapper {
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 10px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.icon-button {
+  font-size: 20px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.investigaciones-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.investigaciones-table th,
+.investigaciones-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.investigaciones-table thead {
+  background-color: #e0e0e0;
+}
+
+.informe-button {
+  background-color: #007f5f;
+  color: white;
+  padding: 6px 12px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.informe-button:hover {
+  background-color: #00664d;
+}
