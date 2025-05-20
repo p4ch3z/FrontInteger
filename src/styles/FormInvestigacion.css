@@ -1,31 +1,63 @@
-.form-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  width: 300px;
-  margin: 20px auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+/* FONDO OSCURO DEL MODAL */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* fondo oscuro translúcido */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeInBackground 0.2s ease;
 }
 
-.form-card h2 {
+/* CONTENIDO CENTRADO */
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 340px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeInModal 0.25s ease;
+}
+
+/* TITULO Y FORMULARIO */
+.modal-content h2 {
   text-align: center;
   margin-bottom: 16px;
   font-size: 1.2rem;
+  color: #2c2f48;
 }
 
-.form-card form {
+.modal-content p {
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.modal-content form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-.form-card input,
-.form-card select {
+.modal-content label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal-content input,
+.modal-content select {
   padding: 8px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  font-size: 0.95rem;
 }
 
+/* BOTONES */
 .form-button {
   padding: 10px;
   background-color: #2c2f48;
@@ -34,8 +66,71 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: bold;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease;
+}
+
+.form-button:hover {
+  background-color: #1a1c2d;
 }
 
 .form-button.cancel {
   background-color: #888;
+}
+
+.form-button.cancel:hover {
+  background-color: #666;
+}
+
+/* ANIMACIONES */
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInBackground {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* TABLA Y ACCIONES */
+.acciones-fila {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.edit-button,
+.delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.delete-button {
+  color: #d60000;
+}
+
+.delete-button:hover {
+  color: #a00000;
+}
+
+.informe-button {
+  background-color: #007f5f;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.9rem;
 }
