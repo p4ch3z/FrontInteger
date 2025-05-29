@@ -1,0 +1,51 @@
+.expert-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.expert-card:hover {
+  transform: translateY(-4px);
+}
+
+.expert-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.expert-rol {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.expert-nombre {
+  font-size: 0.85rem;
+  color: #555;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.tarea-btn {
+  background-color: #2c2f48;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.tarea-btn:hover {
+  background-color: #1a1c2d;
+}

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useMutation } from '@apollo/client';
+import { CREATE_INVESTIGATION } from '../graphql/mutations/investigationTask/createInvestigation';
 import '../styles/FormInvestigacion.css';
 
 const CrearInvestigacion = ({ onCreate, onCancel }) => {
@@ -11,46 +13,79 @@ const CrearInvestigacion = ({ onCreate, onCancel }) => {
   });
 
   const modalRef = useRef();
-
   const brigadas = ['12312312', '345345', '123123', '345345345', '34534', '234234'];
+  const [createInvestigation] = useMutation(CREATE_INVESTIGATION);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onCreate(form);
+
+    const coordenadasRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/;
+    if (!coordenadasRegex.test(form.ubicacion.trim())) {
+      alert('Ubicación inválida. Usa formato: latitud, longitud (ej: 6.25, -73.56)');
+      return;
+    }
+
+    if (!form.fechaInicio || !form.fechaFin) {
+      alert('Debes seleccionar fechas válidas');
+      return;
+    }
+
+    const variables = {
+      fecha_inicio: form.fechaInicio,
+      fecha_fin: form.fechaFin,
+      coordenadas_geograficas: form.ubicacion,
+      nombre: form.nombre,
+    };
+
+    console.log("Variables a enviar:", variables);
+
+    try {
+      const { data } = await createInvestigation({ variables });
+      console.log('Investigación creada:', data);
+      onCreate(data.create_investigation.investigacion);
+    } catch (error) {
+      console.error('GraphQL error:', error.graphQLErrors);
+      console.error('Network error:', error.networkError);
+      alert('Error al crear la investigación. Revisa los datos e intenta nuevamente.');
+    }
   };
 
-  // Cerrar con ESC
   useEffect(() => {
     const handleEsc = (e) => {
-      if (e.key === 'Escape') {
-        onCancel();
-      }
+      if (e.key === 'Escape') onCancel();
     };
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onCancel]);
 
-  // Cerrar al hacer clic fuera del modal
   const handleClickOutside = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
-      onCancel();
-    }
+    if (modalRef.current && !modalRef.current.contains(e.target)) onCancel();
   };
 
   return (
     <div className="modal-overlay" onClick={handleClickOutside}>
       <div className="modal-content" ref={modalRef}>
-        <h2>CREAR INVESTIGACION</h2>
+        <h2>CREAR INVESTIGACIÓN</h2>
         <form onSubmit={handleSubmit}>
-          <label>Nombre de la investigacion</label>
-          <input name="nombre" value={form.nombre} onChange={handleChange} required />
+          <label>Nombre de la investigación</label>
+          <input
+            name="nombre"
+            value={form.nombre || ''}
+            onChange={handleChange}
+            required
+          />
 
           <label>Brigada</label>
-          <select name="brigada" value={form.brigada} onChange={handleChange} required>
+          <select
+            name="brigada"
+            value={form.brigada || ''}
+            onChange={handleChange}
+            required
+          >
             <option value="">Seleccionar</option>
             {brigadas.map((b, i) => (
               <option key={i} value={b}>{b}</option>
@@ -58,13 +93,31 @@ const CrearInvestigacion = ({ onCreate, onCancel }) => {
           </select>
 
           <label>Fecha inicio</label>
-          <input type="date" name="fechaInicio" value={form.fechaInicio} onChange={handleChange} required />
+          <input
+            type="date"
+            name="fechaInicio"
+            value={form.fechaInicio || ''}
+            onChange={handleChange}
+            required
+          />
 
           <label>Fecha fin</label>
-          <input type="date" name="fechaFin" value={form.fechaFin} onChange={handleChange} required />
+          <input
+            type="date"
+            name="fechaFin"
+            value={form.fechaFin || ''}
+            onChange={handleChange}
+            required
+          />
 
-          <label>Ubicacion (X, Y)</label>
-          <input name="ubicacion" value={form.ubicacion} onChange={handleChange} required />
+          <label>Ubicación (latitud, longitud)</label>
+          <input
+            name="ubicacion"
+            value={form.ubicacion || ''}
+            onChange={handleChange}
+            placeholder="Ej: 6.25, -73.56"
+            required
+          />
 
           <button type="submit" className="form-button">CREAR</button>
           <button type="button" className="form-button cancel" onClick={onCancel}>CANCELAR</button>

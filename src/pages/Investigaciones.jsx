@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import CrearInvestigacion from '../components/CrearInvestigacion';
 import EditarInvestigacion from '../components/EditarInvestigacion';
-import ConfirmModal from '../components/ConfirmModal';
+import ModalConfirmacion from '../components/ConfirmModal';
+import Navbarsup from '../components/Navbarsup';
 import '../styles/Investigaciones.css';
 
 const Investigaciones = () => {
   const [investigaciones, setInvestigaciones] = useState([
     {
+      id: '1',
       nombre: "Hiato",
       brigada: "123123",
-      fechaInicio: "2025-02-03",
-      fechaFin: "2025-05-03",
+      fechaInicio: "3 de febrero 2025",
+      fechaFin: "3 de mayo 2025",
       ubicacion: "6.674080638971185, -70.94430822381189",
       informeUrl: "#"
     }
@@ -19,29 +21,27 @@ const Investigaciones = () => {
   const [crearVisible, setCrearVisible] = useState(false);
   const [editarVisible, setEditarVisible] = useState(false);
   const [editData, setEditData] = useState(null);
-  const [confirmVisible, setConfirmVisible] = useState(false);
-  const [toDelete, setToDelete] = useState(null);
+  const [eliminarVisible, setEliminarVisible] = useState(false);
+  const [idEliminar, setIdEliminar] = useState(null);
 
-  const handleCreate = (nueva) => {
-    setInvestigaciones([...investigaciones, nueva]);
+  const handleCrear = (nueva) => {
+    setInvestigaciones([...investigaciones, { ...nueva, id: Date.now().toString() }]);
     setCrearVisible(false);
   };
 
-  const handleEdit = (editada) => {
-    const actualizadas = investigaciones.map(inv =>
-      inv.nombre === editData.nombre ? editada : inv
-    );
-    setInvestigaciones(actualizadas);
+  const handleEditar = (editada) => {
+    setInvestigaciones(investigaciones.map(i => i.id === editData.id ? { ...i, ...editada } : i));
     setEditarVisible(false);
   };
 
-  const handleDeleteConfirm = () => {
-    setInvestigaciones(investigaciones.filter(inv => inv.nombre !== toDelete.nombre));
-    setConfirmVisible(false);
-    setToDelete(null);
+  const handleEliminar = () => {
+    setInvestigaciones(prev => prev.filter(i => i.id !== idEliminar));
+    setEliminarVisible(false);
   };
 
   return (
+    <div className='nav'>
+    <Navbarsup />
     <div className="investigaciones-container">
       <h2 className="title">Gestión de Investigaciones</h2>
 
@@ -56,23 +56,28 @@ const Investigaciones = () => {
               <th>Nombre</th>
               <th>Brigada</th>
               <th>Fecha inicio</th>
-              <th>Fecha Fin</th>
+              <th>Fecha fin</th>
               <th>Ubicación</th>
+              <th>Informe</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {investigaciones.map((inv, index) => (
-              <tr key={index}>
+            {investigaciones.map((inv) => (
+              <tr key={inv.id}>
                 <td>{inv.nombre}</td>
                 <td>{inv.brigada}</td>
                 <td>{inv.fechaInicio}</td>
                 <td>{inv.fechaFin}</td>
                 <td>{inv.ubicacion}</td>
-                <td className="acciones-fila">
-                  <a href={inv.informeUrl} className="informe-button">Informe</a>
+                <td>
+                  <a href={inv.informeUrl} className="informe-button" target="_blank" rel="noreferrer">
+                    Ver informe
+                  </a>
+                </td>
+                <td>
                   <button
-                    className="edit-button"
+                    className="estado-btn"
                     onClick={() => {
                       setEditData(inv);
                       setEditarVisible(true);
@@ -81,10 +86,10 @@ const Investigaciones = () => {
                     ✏️
                   </button>
                   <button
-                    className="delete-button"
+                    className="estado-btn"
                     onClick={() => {
-                      setToDelete(inv);
-                      setConfirmVisible(true);
+                      setIdEliminar(inv.id);
+                      setEliminarVisible(true);
                     }}
                   >
                     🗑️
@@ -98,7 +103,7 @@ const Investigaciones = () => {
 
       {crearVisible && (
         <CrearInvestigacion
-          onCreate={handleCreate}
+          onCreate={handleCrear}
           onCancel={() => setCrearVisible(false)}
         />
       )}
@@ -106,21 +111,19 @@ const Investigaciones = () => {
       {editarVisible && editData && (
         <EditarInvestigacion
           data={editData}
-          onUpdate={handleEdit}
+          onUpdate={handleEditar}
           onCancel={() => setEditarVisible(false)}
         />
       )}
 
-      {confirmVisible && toDelete && (
-        <ConfirmModal
-          mensaje={`¿Estás seguro de que deseas eliminar "${toDelete.nombre}"?`}
-          onConfirm={handleDeleteConfirm}
-          onCancel={() => {
-            setConfirmVisible(false);
-            setToDelete(null);
-          }}
+      {eliminarVisible && (
+        <ModalConfirmacion
+          mensaje="¿Estás seguro de eliminar esta investigación?"
+          onConfirm={handleEliminar}
+          onCancel={() => setEliminarVisible(false)}
         />
       )}
+    </div>
     </div>
   );
 };

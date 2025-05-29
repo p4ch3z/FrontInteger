@@ -1,9 +1,12 @@
 import React from 'react';
 import '../styles/Dashboard.css';
 import avatar from '../assets/react.svg'; // Usa tu imagen real o avatar placeholder
-
+import Navbarsup from '../components/Navbarsup';
 const Dashboard = () => {
+  
   return (
+    <div className='nav'>
+    <Navbarsup />
     <div className="dashboard-container">
       <h2 className="dashboard-title">Dashboard supervisor</h2>
 
@@ -35,6 +38,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

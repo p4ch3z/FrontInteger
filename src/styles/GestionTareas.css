@@ -1,0 +1,53 @@
+.gestion-container {
+  padding: 20px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.table-wrapper {
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+.table-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.icon-button {
+  font-size: 18px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+}
+
+.tareas-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tareas-table th,
+.tareas-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.tareas-table thead {
+  background-color: #e0e0e0;
+}
+
+.estado-btn {
+  background-color: #2c2f48;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
