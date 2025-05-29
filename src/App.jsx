@@ -23,7 +23,6 @@ const App = () => {
         <Route path="/novedades" element={<GestionNovedades />} />
         <Route path="/investigaciones" element={<Investigaciones />} />
         <Route path="/tareas/:rol" element={<GestionTareas />} />
-        <Route path="/gestion-tareas/:rol" element={<GestionTareasExpertos />} />
       </Routes>
     </div>
   );
