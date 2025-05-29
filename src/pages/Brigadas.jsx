@@ -9,6 +9,7 @@ const Brigadas = () => {
   const [brigadas, setBrigadas] = useState([
     {
       id: '1231231',
+      investigacion: 'investigacion 1',
       jefe: 'Paola',
       botanico: 'Pache',
       auxiliar: 'Diego',
@@ -57,6 +58,7 @@ const Brigadas = () => {
           <thead>
             <tr>
               <th>ID</th>
+              <th>Investigacion</th>
               <th>Jefe de brigada</th>
               <th>Botanico</th>
               <th>Auxiliar</th>
@@ -68,6 +70,7 @@ const Brigadas = () => {
             {brigadas.map((b, i) => (
               <tr key={i}>
                 <td>{b.id}</td>
+                <td>{b.investigacion}</td>
                 <td>{b.jefe}</td>
                 <td>{b.botanico}</td>
                 <td>{b.auxiliar}</td>

@@ -5,6 +5,7 @@ const expertos = ['Paola', 'Pache', 'Diego', 'Ricardo', 'Arley', 'Soraya'];
 
 const CrearBrigada = ({ onCreate, onCancel }) => {
   const [form, setForm] = useState({
+    investigacion: '',
     jefe: '',
     botanico: '',
     auxiliar: '',
@@ -12,6 +13,7 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
   });
 
   const [errores, setErrores] = useState([]);
+  const investigaciones = ['investigacion 1', 'investigacion 2', 'investigacion 3', 'investigacion 4', 'investigacion 5', 'investigacion 6'];
   const modalRef = useRef();
 
   useEffect(() => {
@@ -84,6 +86,19 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
       <div className="modal-content" ref={modalRef}>
         <h2>CREAR BRIGADA</h2>
         <form onSubmit={handleSubmit}>
+          <label>Investigacion</label>
+          <select
+            name="investigacion"
+            value={form.investigacion || ''}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Seleccionar</option>
+            {investigaciones.map((b, i) => (
+              <option key={i} value={b}>{b}</option>
+            ))}
+          </select>
+
           <label>Jefe de brigada</label>
           <select
             name="jefe"

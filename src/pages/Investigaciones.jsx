@@ -10,7 +10,6 @@ const Investigaciones = () => {
     {
       id: '1',
       nombre: "Hiato",
-      brigada: "123123",
       fechaInicio: "3 de febrero 2025",
       fechaFin: "3 de mayo 2025",
       ubicacion: "6.674080638971185, -70.94430822381189",
@@ -54,7 +53,6 @@ const Investigaciones = () => {
           <thead>
             <tr>
               <th>Nombre</th>
-              <th>Brigada</th>
               <th>Fecha inicio</th>
               <th>Fecha fin</th>
               <th>Ubicación</th>
@@ -66,7 +64,6 @@ const Investigaciones = () => {
             {investigaciones.map((inv) => (
               <tr key={inv.id}>
                 <td>{inv.nombre}</td>
-                <td>{inv.brigada}</td>
                 <td>{inv.fechaInicio}</td>
                 <td>{inv.fechaFin}</td>
                 <td>{inv.ubicacion}</td>

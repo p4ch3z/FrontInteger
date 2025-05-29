@@ -6,14 +6,12 @@ import '../styles/FormInvestigacion.css';
 const CrearInvestigacion = ({ onCreate, onCancel }) => {
   const [form, setForm] = useState({
     nombre: '',
-    brigada: '',
     fechaInicio: '',
     fechaFin: '',
     ubicacion: '',
   });
 
   const modalRef = useRef();
-  const brigadas = ['12312312', '345345', '123123', '345345345', '34534', '234234'];
   const [createInvestigation] = useMutation(CREATE_INVESTIGATION);
 
   const handleChange = (e) => {
@@ -78,19 +76,6 @@ const CrearInvestigacion = ({ onCreate, onCancel }) => {
             onChange={handleChange}
             required
           />
-
-          <label>Brigada</label>
-          <select
-            name="brigada"
-            value={form.brigada || ''}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Seleccionar</option>
-            {brigadas.map((b, i) => (
-              <option key={i} value={b}>{b}</option>
-            ))}
-          </select>
 
           <label>Fecha inicio</label>
           <input
