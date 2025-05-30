@@ -1,21 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import CrearInvestigacion from '../components/CrearInvestigacion';
 import EditarInvestigacion from '../components/EditarInvestigacion';
 import ModalConfirmacion from '../components/ConfirmModal';
 import Navbarsup from '../components/Navbarsup';
 import '../styles/Investigaciones.css';
 
+import { useQuery } from '@apollo/client';
+import { GET_INVESTIGATIONS } from '../graphql/queries/investigacionTask/allInvestigation';
+import { GET_TEAMS } from '../graphql/queries/teams/allTeams';
+
+import { useMutation } from '@apollo/client';
+import { DELETE_INVESTIGATION } from '../graphql/mutations/investigationTask/deleteInvestigation';
+
+
+import { investiTaskClient, expertsTeamClient } from '../graphql/apolloClient';
+
+
 const Investigaciones = () => {
-  const [investigaciones, setInvestigaciones] = useState([
-    {
-      id: '1',
-      nombre: "Hiato",
-      fechaInicio: "3 de febrero 2025",
-      fechaFin: "3 de mayo 2025",
-      ubicacion: "6.674080638971185, -70.94430822381189",
-      informeUrl: "#"
-    }
-  ]);
+  const { data: investigationData, loading, error } = useQuery(GET_INVESTIGATIONS, {
+    client: investiTaskClient,
+  });
+  const { data: teamsData } = useQuery(GET_TEAMS, {
+    client: expertsTeamClient,
+  });
+
+  const [deleteInvestigation] = useMutation(DELETE_INVESTIGATION, {
+    client: investiTaskClient,
+  });
+
+  const [investigaciones, setInvestigaciones] = useState([]);
 
   const [crearVisible, setCrearVisible] = useState(false);
   const [editarVisible, setEditarVisible] = useState(false);
@@ -23,8 +36,54 @@ const Investigaciones = () => {
   const [eliminarVisible, setEliminarVisible] = useState(false);
   const [idEliminar, setIdEliminar] = useState(null);
 
+  useEffect(() => {
+    if (investigationData && investigationData.allInvestigations) {
+      console.log(investigationData.allInvestigations);
+      
+      const mapped = investigationData.allInvestigations.map(inv => ({
+        id: inv.investigacionId,
+        nombre: inv.nombre,
+        brigada: 'N/A',
+        fechaInicio: inv.fechaInicio,
+        fechaFin: inv.fechaFin,
+        ubicacion: inv.coordenadasGeograficas,
+        informeUrl: "#"
+      }));
+      setInvestigaciones(mapped);
+    }
+
+  }, [investigationData]);
+
+  useEffect(() => {
+    if (teamsData && teamsData.allTeam) {
+      console.log(teamsData.allTeam);
+      
+      // const teamMap = teamsData.allTeam.reduce((acc, team) => {
+      //   acc[team.brigadaExpertoId] = team.brigada;
+      //   return acc;
+      // }, {});
+
+      // setInvestigaciones(prev =>
+      //   prev.map(inv => ({
+      //     ...inv,
+      //     brigada: teamMap[inv.id] || 'N/A'
+      //   }))
+      // );
+    }
+  }, [teamsData]);
+
+  // id: '1',
+  // nombre: "Hiato",
+  // brigada: "123123",
+  // fechaInicio: "3 de febrero 2025",
+  // fechaFin: "3 de mayo 2025",
+  // ubicacion: "6.674080638971185, -70.94430822381189",
+  // informeUrl: "#"
+
   const handleCrear = (nueva) => {
-    setInvestigaciones([...investigaciones, { ...nueva, id: Date.now().toString() }]);
+    console.log(nueva);
+    
+    setInvestigaciones([...investigaciones, { ...nueva, id: nueva.investigacionId, ubicacion: nueva.coordenadasGeograficas, informeUrl: "#" }]);
     setCrearVisible(false);
   };
 
@@ -33,8 +92,19 @@ const Investigaciones = () => {
     setEditarVisible(false);
   };
 
-  const handleEliminar = () => {
-    setInvestigaciones(prev => prev.filter(i => i.id !== idEliminar));
+  const handleEliminar = (investigacion) => {
+    console.log(investigacion);
+    
+    deleteInvestigation({
+      variables: { id: Number(idEliminar) },
+      }).then(response => {
+        console.log('Investigación eliminada:', response.data);
+        setInvestigaciones(prev => prev.filter(i => i.id !== idEliminar));
+      }).catch(error => {
+        console.error('Error al eliminar investigación:', error);
+        alert('Error al eliminar la investigación. Intenta nuevamente.');
+      }
+    );
     setEliminarVisible(false);
   };
 

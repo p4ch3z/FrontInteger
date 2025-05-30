@@ -1,17 +1,45 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/FormInvestigacion.css';
 
+import { UPDATE_INVESTIGATION } from '../graphql/mutations/investigationTask/updateInvestigation';
+import { useMutation } from '@apollo/client';
+
+import { investiTaskClient } from '../graphql/apolloClient';
+
 const EditarInvestigacion = ({ data, onUpdate, onCancel }) => {
   const [form, setForm] = useState({ ...data });
   const modalRef = useRef();
+
+  const [updateInvestigation] = useMutation(UPDATE_INVESTIGATION, {
+      client: investiTaskClient,
+  });
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onUpdate(form);
+    console.log(form);
+
+    const variables = {
+      fechaInicio: form.fechaInicio,
+      fechaFin: form.fechaFin,
+      coordenadasGeograficas: form.ubicacion,
+      nombre: form.nombre,
+      investigacionId: Number(form.id),
+    };
+    
+    try {
+      const { data } = await updateInvestigation({ variables });
+      console.log('Investigación creada:', data);
+      onUpdate(data.updateInvestigation.investigacion);
+    } catch (error) {
+      console.error('GraphQL error:', error.graphQLErrors);
+      console.error('Network error:', error.networkError);
+      alert('Error al editar la investigación. Revisa los datos e intenta nuevamente.');
+    }
+
   };
 
   useEffect(() => {
