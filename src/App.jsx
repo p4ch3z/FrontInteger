@@ -5,7 +5,7 @@ import Dashboardjefe from './pages/Dashboardjefe';
 import Brigadas from './pages/Brigadas';
 import Investigaciones from './pages/Investigaciones';
 import Login from './pages/login';
-import Expertos from './pages/Expertos';
+import InvestigacionesJefe from './pages/InvestigacionesJefe';
 import GestionTareas from './pages/GestionTareas';
 import GestionNovedades from './pages/GestionNovedades';
 const App = () => {
@@ -19,7 +19,7 @@ const App = () => {
         <Route path="/dashboardjefe" element={<Dashboardjefe />} />
         <Route path="/dashboardsup" element={<Dashboardsup />} />
         <Route path="/brigadas" element={<Brigadas />} />
-        <Route path="/expertos" element={<Expertos />} />
+        <Route path="/investigacionesjefe" element={<InvestigacionesJefe />} />
         <Route path="/novedades" element={<GestionNovedades />} />
         <Route path="/investigaciones" element={<Investigaciones />} />
         <Route path="/tareas/:rol" element={<GestionTareas />} />

@@ -1,10 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../styles/FormularioTarea.css';
 
-const FormularioTarea = ({ modo = 'asignar', datosIniciales = {}, onGuardar, onCancelar }) => {
+const FormularioTarea = ({
+  modo = 'asignar',
+  datosIniciales = {},
+  onGuardar,
+  onCancelar,
+  listaExpertos = [] // Debes pasar esta lista desde el padre
+}) => {
   const safeData = datosIniciales || {};
   const [nombre, setNombre] = useState(safeData.nombre || '');
   const [descripcion, setDescripcion] = useState(safeData.descripcion || '');
+  const [experto, setExperto] = useState(safeData.experto || ''); // Nuevo estado
   const modalRef = useRef();
 
   useEffect(() => {
@@ -21,7 +28,7 @@ const FormularioTarea = ({ modo = 'asignar', datosIniciales = {}, onGuardar, onC
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onGuardar({ nombre, descripcion });
+    onGuardar({ nombre, descripcion, experto });
   };
 
   return (
@@ -44,6 +51,16 @@ const FormularioTarea = ({ modo = 'asignar', datosIniciales = {}, onGuardar, onC
             onChange={(e) => setDescripcion(e.target.value)}
             required
           />
+
+          <label>Asignar experto</label>
+          <select value={experto} onChange={(e) => setExperto(e.target.value)} required>
+            <option value="" disabled>Seleccione un experto</option>
+            {listaExpertos.map((exp) => (
+              <option key={exp.cc} value={exp.cc}>
+                {exp.nombre} ({exp.cc})
+              </option>
+            ))}
+          </select>
 
           <button type="submit" className="form-button">
             {modo === 'editar' ? 'EDITAR' : 'ASIGNAR'}
