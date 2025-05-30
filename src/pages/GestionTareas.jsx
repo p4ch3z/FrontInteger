@@ -1,16 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../styles/GestionTareas.css';
 import FormularioTarea from '../components/FormularioTarea';
 import ModalEstado from '../components/ModalEstado';
 import Navbarjefe from '../components/Navbarjefe';
+
+import { useQuery } from '@apollo/client';
+import { GET_TASKS_FOR_EXPERT } from '../graphql/queries/experts/getTasksExpert';
+
+import { investiTaskClient } from '../graphql/apolloClient';
+
+
 const GestionTareas = () => {
-  const { rol } = useParams();
+  const { rol, expertoCc } = useParams();
   const [tareas, setTareas] = useState([]);
+
+  const { data: expertTaskData } = useQuery(GET_TASKS_FOR_EXPERT, {
+    variables: { ccExperto: Number(expertoCc) },
+    client: investiTaskClient,
+  });
+
+  useEffect(() => {
+    if (expertTaskData && expertTaskData.listTasksForExpert) {  
+      const mapped = expertTaskData.listTasksForExpert.map(b => ({
+        tareaId: b.tareaId,
+        nombre: b.nombre,
+        descripcion: b.descripcion,
+        estado: b.estado
+      }));
+      
+      setTareas(mapped)
+    }
+  }, [expertTaskData]);
+
+  
+  
   const [formVisible, setFormVisible] = useState(false);
   const [modo, setModo] = useState('asignar');
   const [datosTarea, setDatosTarea] = useState(null);
   const [estadoModal, setEstadoModal] = useState({ visible: false, index: null });
+
+  console.log(expertoCc);
+  
 
   const getColor = (estado) => {
     if (!estado) return 'black';

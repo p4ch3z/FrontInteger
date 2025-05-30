@@ -8,13 +8,12 @@ const Dashboard = () => {
     <div className='nav'>
     <Navbarsup />
     <div className="dashboard-container">
-      <h2 className="dashboard-title">Dashboard supervisor</h2>
+      <h2 className="dashboard-title">¡Bienvenidos!</h2>
 
-      <div className="dashboard-columns">
+      {/* <div className="dashboard-columns">
         <div className="dashboard-card">
           <h3 className="card-title">Tareas activas</h3>
           <div className="card-content">
-            {/* Aquí van las tareas activas */}
           </div>
         </div>
 
@@ -34,10 +33,9 @@ const Dashboard = () => {
         <div className="dashboard-card">
           <h3 className="card-title">Novedades</h3>
           <div className="card-content">
-            {/* Aquí van novedades */}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
     </div>
   );

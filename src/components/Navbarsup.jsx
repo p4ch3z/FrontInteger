@@ -14,7 +14,7 @@ const Navbar = () => {
   return (
     <div className="navbar">
       <div className="tabs">
-        <NavLink to="/dashboardsup" className={({ isActive }) => isActive ? "tab active" : "tab"}>Dashboard</NavLink>
+        <NavLink to="/dashboardsup" className={({ isActive }) => isActive ? "tab active" : "tab"}>Inicio</NavLink>
         <NavLink to="/brigadas" className={({ isActive }) => isActive ? "tab active" : "tab"}>Brigadas</NavLink>
         <NavLink to="/investigaciones" className={({ isActive }) => isActive ? "tab active" : "tab"}>Investigaciones</NavLink>
       </div>

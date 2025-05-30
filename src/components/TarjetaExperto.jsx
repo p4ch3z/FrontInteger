@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/TarjetaExperto.css';
 import defaultAvatar from '../assets/react.svg';
 
-const TarjetaExperto = ({ rol, nombre, avatar }) => {
+const TarjetaExperto = ({ rol, nombre, avatar, expertoCc }) => {
   const navigate = useNavigate();
+
+  console.log(expertoCc);
+  
 
   const irATareas = () => {
     const rolSlug = rol.toLowerCase().replace(/\s+/g, '-'); // ejemplo: "JEFE DE BRIGADA" -> "jefe-de-brigada"
-    navigate(`/tareas/${rolSlug}`);
+    navigate(`/tareas/${rolSlug}/${expertoCc}`);
   };
 
   return (

@@ -1,11 +1,101 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/FormBrigada.css';
 
-const expertos = ['Paola', 'Pache', 'Diego', 'Ricardo', 'Arley', 'Soraya'];
+import { useMutation } from '@apollo/client';
+import { useQuery } from '@apollo/client';
+
+import { expertsTeamClient } from '../graphql/apolloClient';
+import { GET_BOSS } from '../graphql/queries/teams/allBoss';
+import { GET_BOTANICS } from '../graphql/queries/teams/allBotanics';
+import { GET_AUXILIARS } from '../graphql/queries/teams/allAuxiliars';
+import { GET_INVESTIGATORS } from '../graphql/queries/teams/allInvestigators';
+import { UPDATE_BRIGADE } from '../graphql/mutations/brigadeMutations/updateBrigada';
 
 const EditarBrigada = ({ data, onUpdate, onCancel }) => {
-  const [form, setForm] = useState({ ...data });
+  const { data: bossData } = useQuery(GET_BOSS, {
+    client: expertsTeamClient,
+  });
+  const { data: botanicData } = useQuery(GET_BOTANICS, {
+    client: expertsTeamClient,
+  });
+  const { data: auxiliarsData } = useQuery(GET_AUXILIARS, {
+    client: expertsTeamClient,
+  });
+  const { data: investigatorsData } = useQuery(GET_INVESTIGATORS, {
+    client: expertsTeamClient,
+  });
+  const [updateBrigade] = useMutation(UPDATE_BRIGADE, {
+    client: expertsTeamClient,
+  });
+
+  const [form, setForm] = useState({
+    investigacion: data.investigacion,
+    jefe: data.jefeCC,
+    botanico: data.botanicoCC,
+    auxiliar: data.auxiliarCC,
+    coinvestigadores: [...data.coinvestigadoresCC]
+  });
   const [errores, setErrores] = useState([]);
+  const [boss, setBoss] = useState([]);
+  const [botanico, setBotanico] = useState([]);
+  const [auxiliar, setAuxiliar] = useState([]);
+  const [coInvestigadores, setCoInvestigadores] = useState([]);
+  const [investigaciones, setInvestigaciones] = useState([]);
+
+  useEffect(() => {
+    if (bossData && bossData.allExpertsBoss) {  
+        const mapped = bossData.allExpertsBoss.map(b => ({
+          expertoCc: b.expertoCc,
+          nombre: b.primerNombre + ' ' + b.primerApellido,
+          clasificacion: b.clasificacionDisplay
+        }));
+        console.log("hoa");
+        
+        setBoss(mapped)
+      }
+    }, [bossData]);
+
+  useEffect(() => {
+    if (botanicData && botanicData.allExpertsBotanics) {  
+        const mapped = botanicData.allExpertsBotanics.map(b => ({
+          expertoCc: b.expertoCc,
+          nombre: b.primerNombre + ' ' + b.primerApellido,
+          clasificacion: b.clasificacionDisplay
+        }));
+        console.log(mapped);
+        
+        console.log(form);
+        setBotanico(mapped)
+        
+      }
+    }, [botanicData]);
+
+  useEffect(() => {
+    if (auxiliarsData && auxiliarsData.allExpertsAuxiliars) {  
+        const mapped = auxiliarsData.allExpertsAuxiliars.map(b => ({
+          expertoCc: b.expertoCc,
+          nombre: b.primerNombre + ' ' + b.primerApellido,
+          clasificacion: b.clasificacionDisplay
+        }));
+        setAuxiliar(mapped)
+      }
+    }, [auxiliarsData]);
+
+  useEffect(() => {
+    if (investigatorsData && investigatorsData.allExpertsCoInvestigators) {  
+        const mapped = investigatorsData.allExpertsCoInvestigators.map(b => ({
+          expertoCc: b.expertoCc,
+          nombre: b.primerNombre + ' ' + b.primerApellido,
+          clasificacion: b.clasificacionDisplay
+        }));
+        setCoInvestigadores(mapped)
+      }
+    }, [investigatorsData]);
+
+
+  console.log(data);
+  
+  
 
   const modalRef = useRef();
 
@@ -68,10 +158,36 @@ const EditarBrigada = ({ data, onUpdate, onCancel }) => {
     return duplicados.length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validarDuplicados()) return;
-    onUpdate({ ...form, id: data.id });
+
+    console.log(form);
+
+    const expertosIds = [
+      form.jefe,
+      form.botanico,
+      form.auxiliar,
+      ...form.coinvestigadores
+    ]
+      .filter(Boolean)
+      .map((id) => Number(id))
+      .filter((id) => !isNaN(id));
+
+    const sendForm = {
+      investigacionId: Number(form.investigacion),
+      expertosIds: expertosIds,
+    };
+
+    try {
+      const { data } = await updateBrigade({ variables: sendForm });
+      console.log('Investigación editada:', data);
+      onUpdate({form, brigada: data.updateTeam.brigada});
+    } catch (error) {
+      console.error('GraphQL error:', error.graphQLErrors);
+      console.error('Network error:', error.networkError);
+      alert('Error al editar la investigación. Revisa los datos e intenta nuevamente.');
+    }
+  
   };
 
   return (
@@ -88,8 +204,8 @@ const EditarBrigada = ({ data, onUpdate, onCancel }) => {
             required
           >
             <option value="">Seleccionar</option>
-            {expertos.filter(e => !estaSeleccionado(e) || form.botanico === e).map((e, i) => (
-              <option key={i} value={e}>{e}</option>
+            {botanico.filter(e => !estaSeleccionado(e) || form.botanico === e).map((e, i) => (
+              <option key={i} value={e.expertoCc}>{e.nombre}</option>
             ))}
           </select>
 
@@ -102,8 +218,8 @@ const EditarBrigada = ({ data, onUpdate, onCancel }) => {
             required
           >
             <option value="">Seleccionar</option>
-            {expertos.filter(e => !estaSeleccionado(e) || form.auxiliar === e).map((e, i) => (
-              <option key={i} value={e}>{e}</option>
+            {auxiliar.filter(e => !estaSeleccionado(e) || form.auxiliar === e).map((e, i) => (
+              <option key={i} value={e.expertoCc}>{e.nombre}</option>
             ))}
           </select>
 
@@ -118,8 +234,8 @@ const EditarBrigada = ({ data, onUpdate, onCancel }) => {
                   required
                 >
                   <option value="">Seleccionar</option>
-                  {expertos.filter(e => !estaSeleccionado(e) || val === e).map((e, j) => (
-                    <option key={j} value={e}>{e}</option>
+                  {coInvestigadores.filter(e => !estaSeleccionado(e) || val === e).map((e, j) => (
+                    <option key={j} value={e.expertoCc}>{e.nombre}</option>
                   ))}
                 </select>
                 {form.coinvestigadores.length > 1 && (

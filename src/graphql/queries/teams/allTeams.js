@@ -5,9 +5,11 @@ export const GET_TEAMS = gql`
     allTeam {
       brigadaId,  
       investigacionId,
-      brigadaexpertoSet {
-        brigadaExpertoId,
-        expertoCc
+      expertos {
+        expertoCc,
+        primerNombre,
+        primerApellido,
+        clasificacion
       }
     }
   }

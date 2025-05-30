@@ -5,9 +5,9 @@ import avatar from '../assets/react.svg'; // Cambia por un avatar real si tienes
 const Dashboard = ({ titulo, expertoNombre, expertoRol, tarjetas }) => {
   return (
     <div className="dashboard-container">
-      <h2 className="dashboard-title">{titulo}</h2>
+      <h2 className="dashboard-title">¡Bienvenidos!</h2>
 
-      <div className="dashboard-columns">
+      {/* <div className="dashboard-columns">
         {tarjetas.map((tarjeta, i) => (
           <div className="dashboard-card" key={i}>
             <h3 className="card-title">{tarjeta.titulo}</h3>
@@ -29,7 +29,7 @@ const Dashboard = ({ titulo, expertoNombre, expertoRol, tarjetas }) => {
             </div>
           </div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

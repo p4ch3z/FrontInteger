@@ -1,9 +1,38 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/FormBrigada.css';
 
-const expertos = ['Paola', 'Pache', 'Diego', 'Ricardo', 'Arley', 'Soraya'];
+import { useMutation } from '@apollo/client';
+import { useQuery } from '@apollo/client';
+
+import { investiTaskClient, expertsTeamClient } from '../graphql/apolloClient';
+import { GET_BOSS } from '../graphql/queries/teams/allBoss';
+import { GET_BOTANICS } from '../graphql/queries/teams/allBotanics';
+import { GET_AUXILIARS } from '../graphql/queries/teams/allAuxiliars';
+import { GET_INVESTIGATORS } from '../graphql/queries/teams/allInvestigators';
+import { GET_INVESTIGATIONS } from '../graphql/queries/investigacionTask/allInvestigation';
+import { CREATE_BRIGADE } from '../graphql/mutations/brigadeMutations/createBrigada';
 
 const CrearBrigada = ({ onCreate, onCancel }) => {
+  const { data: bossData } = useQuery(GET_BOSS, {
+    client: expertsTeamClient,
+  });
+  const { data: botanicData } = useQuery(GET_BOTANICS, {
+    client: expertsTeamClient,
+  });
+  const { data: auxiliarsData } = useQuery(GET_AUXILIARS, {
+    client: expertsTeamClient,
+  });
+  const { data: investigatorsData } = useQuery(GET_INVESTIGATORS, {
+    client: expertsTeamClient,
+  });
+  const { data: investigationData, loading, error } = useQuery(GET_INVESTIGATIONS, {
+    client: investiTaskClient,
+  });
+  const [createBrigade] = useMutation(CREATE_BRIGADE, {
+    client: expertsTeamClient,
+  });
+
+
   const [form, setForm] = useState({
     investigacion: '',
     jefe: '',
@@ -11,9 +40,78 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
     auxiliar: '',
     coinvestigadores: ['', '']
   });
+  const [boss, setBoss] = useState([]);
+  const [botanico, setBotanico] = useState([]);
+  const [auxiliar, setAuxiliar] = useState([]);
+  const [coInvestigadores, setCoInvestigadores] = useState([]);
+  const [investigaciones, setInvestigaciones] = useState([]);
+
+  useEffect(() => {
+    if (bossData && bossData.allExpertsBoss) {  
+        const mapped = bossData.allExpertsBoss.map(b => ({
+          expertoCc: b.expertoCc,
+          nombre: b.primerNombre + ' ' + b.primerApellido,
+          clasificacion: b.clasificacionDisplay
+        }));
+        setBoss(mapped)
+      }
+    }, [bossData]);
+
+    useEffect(() => {
+        if (investigationData && investigationData.allInvestigations) {
+          console.log(investigationData.allInvestigations);
+          
+          const mapped = investigationData.allInvestigations.map(inv => ({
+            id: inv.investigacionId,
+            nombre: inv.nombre,
+            brigada: 'N/A',
+            fechaInicio: inv.fechaInicio,
+            fechaFin: inv.fechaFin,
+            ubicacion: inv.coordenadasGeograficas,
+            informeUrl: "#"
+          }));
+          setInvestigaciones(mapped);
+        }
+    
+      }, [investigationData]);
+
+  useEffect(() => {
+    if (botanicData && botanicData.allExpertsBotanics) {  
+        const mapped = botanicData.allExpertsBotanics.map(b => ({
+          expertoCc: b.expertoCc,
+          nombre: b.primerNombre + ' ' + b.primerApellido,
+          clasificacion: b.clasificacionDisplay
+        }));
+        console.log(mapped);
+        
+        setBotanico(mapped)
+      }
+    }, [botanicData]);
+
+  useEffect(() => {
+    if (auxiliarsData && auxiliarsData.allExpertsAuxiliars) {  
+        const mapped = auxiliarsData.allExpertsAuxiliars.map(b => ({
+          expertoCc: b.expertoCc,
+          nombre: b.primerNombre + ' ' + b.primerApellido,
+          clasificacion: b.clasificacionDisplay
+        }));
+        setAuxiliar(mapped)
+      }
+    }, [auxiliarsData]);
+
+  useEffect(() => {
+    if (investigatorsData && investigatorsData.allExpertsCoInvestigators) {  
+        const mapped = investigatorsData.allExpertsCoInvestigators.map(b => ({
+          expertoCc: b.expertoCc,
+          nombre: b.primerNombre + ' ' + b.primerApellido,
+          clasificacion: b.clasificacionDisplay
+        }));
+        setCoInvestigadores(mapped)
+      }
+    }, [investigatorsData]);
 
   const [errores, setErrores] = useState([]);
-  const investigaciones = ['investigacion 1', 'investigacion 2', 'investigacion 3', 'investigacion 4', 'investigacion 5', 'investigacion 6'];
+  // const investigaciones = ['investigacion 1', 'investigacion 2', 'investigacion 3', 'investigacion 4', 'investigacion 5', 'investigacion 6'];
   const modalRef = useRef();
 
   useEffect(() => {
@@ -75,10 +173,37 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
     return duplicados.length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validarDuplicados()) return;
-    onCreate(form);
+    console.log(form);
+
+    const expertosIds = [
+      form.jefe,
+      form.botanico,
+      form.auxiliar,
+      ...form.coinvestigadores
+    ]
+      .filter(Boolean)
+      .map((id) => Number(id))
+      .filter((id) => !isNaN(id));
+
+    const sendForm = {
+      investigacionId: Number(form.investigacion),
+      expertosIds: expertosIds,
+    };
+    console.log(sendForm);
+    
+    
+    try {
+      const { data } = await createBrigade({ variables: sendForm });
+      console.log('Investigación creada:', data);
+      onCreate({form, brigada: data.createTeam.brigada});
+    } catch (error) {
+      console.error('GraphQL error:', error.graphQLErrors);
+      console.error('Network error:', error.networkError);
+      alert('Error al crear la investigación. Revisa los datos e intenta nuevamente.');
+    }
   };
 
   return (
@@ -95,7 +220,7 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
           >
             <option value="">Seleccionar</option>
             {investigaciones.map((b, i) => (
-              <option key={i} value={b}>{b}</option>
+              <option key={i} value={b.id}>{b.nombre}</option>
             ))}
           </select>
 
@@ -108,12 +233,14 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
             required
           >
             <option value="">Seleccionar</option>
-            {expertos
+            {boss
               .filter(e => !estaSeleccionado(e) || form.jefe === e)
               .map((e, i) => (
-                <option key={i} value={e}>{e}</option>
+                <option key={i} value={e.expertoCc}>{e.nombre}</option>
               ))}
           </select>
+
+
 
           <label>Botanico</label>
           <select
@@ -124,10 +251,10 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
             required
           >
             <option value="">Seleccionar</option>
-            {expertos
+            {botanico
               .filter(e => !estaSeleccionado(e) || form.botanico === e)
               .map((e, i) => (
-                <option key={i} value={e}>{e}</option>
+                <option key={i} value={e.expertoCc}>{e.nombre}</option>
               ))}
           </select>
 
@@ -140,10 +267,10 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
             required
           >
             <option value="">Seleccionar</option>
-            {expertos
+            {auxiliar
               .filter(e => !estaSeleccionado(e) || form.auxiliar === e)
               .map((e, i) => (
-                <option key={i} value={e}>{e}</option>
+                <option key={i} value={e.expertoCc}>{e.nombre}</option>
               ))}
           </select>
 
@@ -158,10 +285,10 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
                   required
                 >
                   <option value="">Seleccionar</option>
-                  {expertos
+                  {coInvestigadores
                     .filter(e => !estaSeleccionado(e) || val === e)
                     .map((e, j) => (
-                      <option key={j} value={e}>{e}</option>
+                      <option key={j} value={e.expertoCc}>{e.nombre}</option>
                     ))}
                 </select>
                 {form.coinvestigadores.length > 1 && (
