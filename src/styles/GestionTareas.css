@@ -42,12 +42,36 @@
   background-color: #e0e0e0;
 }
 
+.acciones-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
 .estado-btn {
   background-color: #2c2f48;
   color: white;
   border: none;
-  padding: 6px 10px;
+  padding: 6px 12px;
   font-size: 0.8rem;
   border-radius: 6px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+.icono-btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.2s ease;
+}
+
+.icono-btn:hover {
+  transform: scale(1.2);
 }

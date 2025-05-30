@@ -1,0 +1,74 @@
+.investigacion-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.investigacion-card:hover {
+  transform: translateY(-4px);
+}
+
+.investigacion-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 12px;
+}
+
+.investigacion-nombre {
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.investigacion-descripcion {
+  font-size: 0.85rem;
+  color: #444;
+  text-align: center;
+  margin-bottom: 12px;
+  padding: 0 6px;
+}
+
+.tarea-btn {
+  background-color: #2c2f48;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tarea-btn:hover {
+  background-color: #1a1c2d;
+}
+
+.investigaciones-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.investigaciones-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #2c2f48;
+}
+
+.investigaciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  justify-items: center;
+}
