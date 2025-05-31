@@ -1,12 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../styles/FormularioTarea.css';
 
+const investigacionesMock = [
+  'Amazonía Verde',
+  'Bosques Andinos',
+  'Agua y Clima',
+  'Diversidad Faunística'
+];
+
 const FormularioNovedad = ({ modo = 'crear', datosIniciales = {}, onGuardar, onCancelar }) => {
   const safeData = datosIniciales || {};
   const [nombre, setNombre] = useState(safeData.nombre || '');
   const [tipo, setTipo] = useState(safeData.tipo || '');
   const [descripcion, setDescripcion] = useState(safeData.descripcion || '');
   const [comentarios, setComentarios] = useState(safeData.comentarios || '');
+  const [investigacion, setInvestigacion] = useState(safeData.investigacion || '');
   const [archivos, setArchivos] = useState([]);
   const [vistasPrevias, setVistasPrevias] = useState([]);
   const modalRef = useRef();
@@ -27,7 +35,6 @@ const FormularioNovedad = ({ modo = 'crear', datosIniciales = {}, onGuardar, onC
     const files = Array.from(e.target.files);
     setArchivos(files);
 
-    // generar vistas previas para imágenes
     const nuevasVistas = [];
     files.forEach((file) => {
       if (file.type.startsWith('image/')) {
@@ -56,6 +63,7 @@ const FormularioNovedad = ({ modo = 'crear', datosIniciales = {}, onGuardar, onC
       tipo,
       descripcion,
       comentarios,
+      investigacion,
       archivos: archivos.map(file => file.name)
     };
 
@@ -78,6 +86,14 @@ const FormularioNovedad = ({ modo = 'crear', datosIniciales = {}, onGuardar, onC
 
           <label>Comentarios</label>
           <textarea rows="2" value={comentarios} onChange={(e) => setComentarios(e.target.value)} />
+
+          <label>Investigación</label>
+          <select value={investigacion} onChange={(e) => setInvestigacion(e.target.value)} required>
+            <option value="">-- Selecciona una investigación --</option>
+            {investigacionesMock.map((inv, i) => (
+              <option key={i} value={inv}>{inv}</option>
+            ))}
+          </select>
 
           <label>Archivos multimedia</label>
           <input type="file" multiple accept="image/*,application/pdf,video/*" onChange={handleArchivosChange} />

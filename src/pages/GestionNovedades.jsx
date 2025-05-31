@@ -33,72 +33,74 @@ const GestionNovedades = () => {
 
   return (
     <div className='nav'>
-    <Navbarjefe />
-    <div className="gestion-container">
-      <h2>Novedades</h2>
+      <Navbarjefe />
+      <div className="gestion-container">
+        <h2>Novedades</h2>
 
-      <div className="table-wrapper">
-        <div className="table-controls">
-          <button
-            onClick={() => {
-              setModo('crear');
-              setDatosNovedad(null);
-              setFormVisible(true);
-            }}
-            className="icon-button"
-          >
-            ➕
-          </button>
+        <div className="table-wrapper">
+          <div className="table-controls">
+            <button
+              onClick={() => {
+                setModo('crear');
+                setDatosNovedad(null);
+                setFormVisible(true);
+              }}
+              className="icon-button"
+            >
+              ➕
+            </button>
+          </div>
+
+          <table className="novedades-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Investigación</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Comentarios</th> 
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {novedades.map((n, i) => (
+                <tr key={i}>
+                  <td>{n.nombre}</td>
+                  <td>{n.investigacion || '—'}</td> 
+                  <td>{n.tipo}</td>
+                  <td>{n.descripcion}</td>
+                  <td>{n.fecha}</td>
+                  <td>{n.comentarios}</td>
+                  <td>
+                    <button
+                      className="estado-btn"
+                      onClick={() => {
+                        setModo('editar');
+                        setDatosNovedad({ ...n, index: i });
+                        setFormVisible(true);
+                      }}
+                    >✏️</button>
+                    <button
+                      className="estado-btn"
+                      onClick={() => handleEliminarNovedad(i)}
+                    >🗑️</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
-        <table className="novedades-table">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Tipo</th>
-              <th>Descripción</th>
-              <th>Fecha</th>
-              <th>Comentarios</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {novedades.map((n, i) => (
-              <tr key={i}>
-                <td>{n.nombre}</td>
-                <td>{n.tipo}</td>
-                <td>{n.descripcion}</td>
-                <td>{n.fecha}</td>
-                <td>{n.comentarios}</td>
-                <td>
-                  <button
-                    className="estado-btn"
-                    onClick={() => {
-                      setModo('editar');
-                      setDatosNovedad({ ...n, index: i });
-                      setFormVisible(true);
-                    }}
-                  >✏️</button>
-                  <button
-                    className="estado-btn"
-                    onClick={() => handleEliminarNovedad(i)}
-                  >🗑️</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {formVisible && (
+          <FormularioNovedad
+            modo={modo}
+            datosIniciales={datosNovedad}
+            onGuardar={handleGuardarNovedad}
+            onCancelar={() => setFormVisible(false)}
+          />
+        )}
       </div>
-
-      {formVisible && (
-        <FormularioNovedad
-          modo={modo}
-          datosIniciales={datosNovedad}
-          onGuardar={handleGuardarNovedad}
-          onCancelar={() => setFormVisible(false)}
-        />
-      )}
-    </div>
     </div>
   );
 };
