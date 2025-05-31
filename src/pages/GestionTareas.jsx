@@ -6,32 +6,50 @@ import ModalEstado from '../components/ModalEstado';
 import Navbarjefe from '../components/Navbarjefe';
 
 import { useQuery } from '@apollo/client';
-import { GET_TASKS_FOR_EXPERT } from '../graphql/queries/experts/getTasksExpert';
+import { INVESTIGACION_FOR_NAME } from '../graphql/queries/investigacionTask/investigationForName';
+import { INFORMATION_ABOUT_TASK_FOR_ID_INVESTIGATION } from '../graphql/queries/investigacionTask/informationAboutTaskForIdInvestigation';
 
 import { investiTaskClient } from '../graphql/apolloClient';
 
+import { useMutation } from '@apollo/client';
+import { UPDATE_TASK_STATE } from '../graphql/mutations/investigationTask/updateTaskState';
+
 
 const GestionTareas = () => {
-  const { rol, expertoCc } = useParams();
+  const { investigacion, expertoCc } = useParams();
   const [tareas, setTareas] = useState([]);
 
-  const { data: expertTaskData } = useQuery(GET_TASKS_FOR_EXPERT, {
-    variables: { ccExperto: Number(expertoCc) },
+  console.log(investigacion);
+  const { data: investigationData } = useQuery(INVESTIGACION_FOR_NAME, {
+    variables: { name: investigacion.replace('-',' ') },
+    client: investiTaskClient
+  });
+
+  const [updateTaskState] = useMutation(UPDATE_TASK_STATE, {
     client: investiTaskClient,
   });
 
+  const investigationId = investigationData?.investigacionForName;
+
+  console.log(investigationId);
+  
+  const {
+    data: tasksData,
+    loading: loadingTasks,
+    error: errorTasks,
+  } = useQuery(INFORMATION_ABOUT_TASK_FOR_ID_INVESTIGATION, {
+    variables: { idInvestigation: Number(investigationId) },
+    client: investiTaskClient,
+    skip: !investigationId,
+  });
+
   useEffect(() => {
-    if (expertTaskData && expertTaskData.listTasksForExpert) {  
-      const mapped = expertTaskData.listTasksForExpert.map(b => ({
-        tareaId: b.tareaId,
-        nombre: b.nombre,
-        descripcion: b.descripcion,
-        estado: b.estado
-      }));
+    if (tasksData?.informationAboutTaskForIdInvestigation) {
+      console.log(tasksData);
       
-      setTareas(mapped)
+      setTareas(tasksData.informationAboutTaskForIdInvestigation);
     }
-  }, [expertTaskData]);
+  }, [tasksData]);
 
   
   
@@ -48,9 +66,9 @@ const GestionTareas = () => {
     switch (estado.toLowerCase()) {
       case 'pendiente':
         return 'red';
-      case 'en curso':
+      case 'en progreso':
         return 'orange';
-      case 'completada':
+      case 'completado':
         return 'green';
       default:
         return 'black';
@@ -61,9 +79,9 @@ const GestionTareas = () => {
     switch (estado?.toLowerCase()) {
       case 'pendiente':
         return '🔴';
-      case 'en curso':
+      case 'en progreso':
         return '🟠';
-      case 'completada':
+      case 'completado':
         return '🟢';
       default:
         return '⚪';
@@ -88,9 +106,23 @@ const GestionTareas = () => {
   };
 
   const cambiarEstado = (index, nuevoEstado) => {
-    const nuevas = [...tareas];
-    nuevas[index].estado = nuevoEstado;
-    setTareas(nuevas);
+    const nuevas = tareas.map(t => {
+        if (t.tareaId === index) {
+            return { ...t, estado: nuevoEstado.toUpperCase() };
+        }
+        return t;
+    });
+    
+    updateTaskState({
+      variables: { tareaId: Number(index), estado: nuevoEstado.toLowerCase() },
+      }).then(response => {
+        console.log('Estado actualizado:', response.data);
+        setTareas(nuevas);
+      }).catch(error => {
+        console.error('Error al actualizar el estado:', error);
+        alert('Error al actualizar el estado. Intenta nuevamente.');
+      }
+    );
     setEstadoModal({ visible: false, index: null });
   };
 
@@ -106,7 +138,7 @@ const GestionTareas = () => {
     <div className='nav'>
       <Navbarjefe />
       <div className="gestion-container">
-        <h2>Gestión de Tareas - {rol.replace(/-/g, ' ').toUpperCase()}</h2>
+        <h2>Gestión de Tareas - {investigacion.replace(/-/g, ' ').toUpperCase()}</h2>
 
         <div className="table-wrapper">
           <div className="table-controls">
@@ -142,7 +174,7 @@ const GestionTareas = () => {
                   <td className="acciones-cell">
                     <button
                       className="estado-btn"
-                      onClick={() => setEstadoModal({ visible: true, index: i })}
+                      onClick={() => setEstadoModal({ visible: true, index: t.tareaId })}
                     >
                       {getEstadoIcono(t.estado)} Estado
                     </button>

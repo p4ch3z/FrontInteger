@@ -8,7 +8,12 @@ const FormularioTarea = ({
   onCancelar,
   listaExpertos = [] // Debes pasar esta lista desde el padre
 }) => {
+  console.log(datosIniciales);
+  
+
   const safeData = datosIniciales || {};
+  console.log(safeData);
+  
   const [nombre, setNombre] = useState(safeData.nombre || '');
   const [descripcion, setDescripcion] = useState(safeData.descripcion || '');
   const [experto, setExperto] = useState(safeData.experto || ''); // Nuevo estado

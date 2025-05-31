@@ -3,7 +3,7 @@ import '../styles/FormularioTarea.css';
 
 const ModalEstado = ({ estadoActual, onSeleccion, onCancelar }) => {
   const ref = useRef();
-  const opciones = ['Pendiente', 'En curso', 'Completada'];
+  const opciones = ['Pendiente', 'En progreso', 'Completado'];
 
   useEffect(() => {
     const esc = (e) => e.key === 'Escape' && onCancelar();
