@@ -6,17 +6,20 @@ const FormularioTarea = ({
   datosIniciales = {},
   onGuardar,
   onCancelar,
-  listaExpertos = [] // Debes pasar esta lista desde el padre
+  listaExpertos
 }) => {
-  console.log(datosIniciales);
+  console.log(modo);
   
-
+  console.log(datosIniciales);
+  console.log(listaExpertos);
+  
   const safeData = datosIniciales || {};
   console.log(safeData);
   
   const [nombre, setNombre] = useState(safeData.nombre || '');
   const [descripcion, setDescripcion] = useState(safeData.descripcion || '');
-  const [experto, setExperto] = useState(safeData.experto || ''); // Nuevo estado
+  const [experto, setExperto] = useState(safeData?.experto?.expertoCc || '');
+  const [fechaEjecucion, setFechaEjecucion] = useState(safeData?.fechaEjecucion || ''); // NUEVO
   const modalRef = useRef();
 
   useEffect(() => {
@@ -33,7 +36,7 @@ const FormularioTarea = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onGuardar({ nombre, descripcion, experto });
+    onGuardar({ nombre, descripcion, experto, fechaEjecucion }); // AÑADIDO
   };
 
   return (
@@ -57,12 +60,20 @@ const FormularioTarea = ({
             required
           />
 
+          <label>Fecha de ejecución</label>
+          <input
+            type="date"
+            value={fechaEjecucion}
+            onChange={(e) => setFechaEjecucion(e.target.value)}
+            required
+          />
+
           <label>Asignar experto</label>
           <select value={experto} onChange={(e) => setExperto(e.target.value)} required>
             <option value="" disabled>Seleccione un experto</option>
             {listaExpertos.map((exp) => (
-              <option key={exp.cc} value={exp.cc}>
-                {exp.nombre} ({exp.cc})
+              <option key={exp.expertoCc} value={exp.expertoCc}>
+                {exp.primerNombre + " " + exp.primerApellido} ({exp.expertoCc})
               </option>
             ))}
           </select>

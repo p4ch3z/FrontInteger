@@ -1,22 +1,53 @@
 import React, { useEffect, useRef, useState } from 'react';
 import '../styles/FormularioTarea.css';
 
-const investigacionesMock = [
-  'Amazonía Verde',
-  'Bosques Andinos',
-  'Agua y Clima',
-  'Diversidad Faunística'
-];
+// const investigacionesMock = [
+//   'Amazonía Verde',
+//   'Bosques Andinos',
+//   'Agua y Clima',
+//   'Diversidad Faunística'
+// ];
+
+import { useQuery } from '@apollo/client';
+import { GET_INVESTIGATIONS } from '../graphql/queries/investigacionTask/allInvestigation';
+
+import { investiTaskClient } from '../graphql/apolloClient';
 
 const FormularioNovedad = ({ modo = 'crear', datosIniciales = {}, onGuardar, onCancelar }) => {
+  const { data: investigationData, loading, error } = useQuery(GET_INVESTIGATIONS, {
+      client: investiTaskClient,
+  });
+
+  const [investigacionesMock, setInvestigacionesMock] = useState([]);
+
+  useEffect(() => {
+      if (investigationData && investigationData.allInvestigations) {
+  
+        const mapped = investigationData.allInvestigations.map(inv => ({
+          id: inv.investigacionId,
+          nombre: inv.nombre,
+          brigada: 'N/A',
+          fechaInicio: inv.fechaInicio,
+          fechaFin: inv.fechaFin,
+          ubicacion: inv.coordenadasGeograficas,
+          informeUrl: "#",
+          descripcion: "",
+          defaultImagen: ""
+        }));
+        setInvestigacionesMock(mapped);
+      }
+  
+    }, [investigationData]);
+  
+
   const safeData = datosIniciales || {};
   const [nombre, setNombre] = useState(safeData.nombre || '');
   const [tipo, setTipo] = useState(safeData.tipo || '');
-  const [descripcion, setDescripcion] = useState(safeData.descripcion || '');
-  const [comentarios, setComentarios] = useState(safeData.comentarios || '');
+  // const [descripcion, setDescripcion] = useState(safeData.descripcion || '');
+  const [comentario, setComentario] = useState(safeData.comentario || '');
   const [investigacion, setInvestigacion] = useState(safeData.investigacion || '');
-  const [archivos, setArchivos] = useState([]);
-  const [vistasPrevias, setVistasPrevias] = useState([]);
+  // const [archivos, setArchivos] = useState([]);
+  // const [vistasPrevias, setVistasPrevias] = useState([]);
   const modalRef = useRef();
 
   useEffect(() => {
@@ -57,14 +88,11 @@ const FormularioNovedad = ({ modo = 'crear', datosIniciales = {}, onGuardar, onC
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    console.log(investigacion);
     const nuevaNovedad = {
       nombre,
-      tipo,
-      descripcion,
-      comentarios,
-      investigacion,
-      archivos: archivos.map(file => file.name)
+      comentario,
+      investigacionId: investigacion,
     };
 
     onGuardar(nuevaNovedad);
@@ -77,28 +105,28 @@ const FormularioNovedad = ({ modo = 'crear', datosIniciales = {}, onGuardar, onC
         <form onSubmit={handleSubmit}>
           <label>Nombre de la novedad</label>
           <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-
+{/* 
           <label>Tipo</label>
-          <input type="text" value={tipo} onChange={(e) => setTipo(e.target.value)} required />
+          <input type="text" value={tipo} onChange={(e) => setTipo(e.target.value)} required /> */}
 
-          <label>Descripción</label>
-          <textarea rows="3" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} required />
+          {/* <label>Descripción</label>
+          <textarea rows="3" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} required /> */}
 
           <label>Comentarios</label>
-          <textarea rows="2" value={comentarios} onChange={(e) => setComentarios(e.target.value)} />
+          <textarea rows="2" value={comentario} onChange={(e) => setComentario(e.target.value)} />
 
           <label>Investigación</label>
           <select value={investigacion} onChange={(e) => setInvestigacion(e.target.value)} required>
             <option value="">-- Selecciona una investigación --</option>
             {investigacionesMock.map((inv, i) => (
-              <option key={i} value={inv}>{inv}</option>
+              <option key={i} value={inv.id}>{inv.nombre}</option>
             ))}
           </select>
 
-          <label>Archivos multimedia</label>
-          <input type="file" multiple accept="image/*,application/pdf,video/*" onChange={handleArchivosChange} />
+          {/* <label>Archivos multimedia</label>
+          <input type="file" multiple accept="image/*,application/pdf,video/*" onChange={handleArchivosChange} /> */}
 
-          {vistasPrevias.length > 0 && (
+          {/* {vistasPrevias.length > 0 && (
             <div className="imagenes-grid">
               {vistasPrevias.map((img, i) => (
                 <div key={i} className="imagen-item">
@@ -108,9 +136,9 @@ const FormularioNovedad = ({ modo = 'crear', datosIniciales = {}, onGuardar, onC
                 </div>
               ))}
             </div>
-          )}
+          )} */}
 
-          {archivos.length > 0 && (
+          {/* {archivos.length > 0 && (
             <ul className="archivo-lista">
               {archivos
                 .filter(file => !file.type.startsWith('image/'))
@@ -121,7 +149,7 @@ const FormularioNovedad = ({ modo = 'crear', datosIniciales = {}, onGuardar, onC
                   </li>
               ))}
             </ul>
-          )}
+          )} */}
 
           <button type="submit" className="form-button">
             {modo === 'editar' ? 'EDITAR' : 'CREAR'}

@@ -1,13 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/GestionNovedades.css';
 import FormularioNovedad from '../components/FormularioNovedad';
 import Navbarjefe from '../components/Navbarjefe';
+
+import { useQuery } from '@apollo/client';
+import { GET_ALL_NEWS } from '../graphql/queries/newsPhoto/allNews';
+
+import { newsPhotoClient } from '../graphql/apolloClient';
 
 const GestionNovedades = () => {
   const [novedades, setNovedades] = useState([]);
   const [formVisible, setFormVisible] = useState(false);
   const [modo, setModo] = useState('crear');
   const [datosNovedad, setDatosNovedad] = useState(null);
+
+  const { data: newsData } = useQuery(GET_ALL_NEWS, {
+      client: newsPhotoClient
+  });
+
+  useEffect(() => {
+    if (newsData?.allNews) {
+      console.log(newsData.allNews);
+      
+      setNovedades(newsData.allNews);
+    }
+  }, [newsData]);
 
   const handleGuardarNovedad = (nuevaNovedad) => {
     const novedadConFecha = {
@@ -56,8 +73,6 @@ const GestionNovedades = () => {
               <tr>
                 <th>Nombre</th>
                 <th>Investigación</th>
-                <th>Tipo</th>
-                <th>Descripción</th>
                 <th>Fecha</th>
                 <th>Comentarios</th> 
                 <th>Acciones</th>
@@ -67,11 +82,9 @@ const GestionNovedades = () => {
               {novedades.map((n, i) => (
                 <tr key={i}>
                   <td>{n.nombre}</td>
-                  <td>{n.investigacion || '—'}</td> 
-                  <td>{n.tipo}</td>
-                  <td>{n.descripcion}</td>
+                  <td>{n.investigacionId || '—'}</td> 
                   <td>{n.fecha}</td>
-                  <td>{n.comentarios}</td>
+                  <td>{n.comentario}</td>
                   <td>
                     <button
                       className="estado-btn"

@@ -6,7 +6,9 @@ export const INFORMATION_ABOUT_TASK_FOR_ID_INVESTIGATION = gql`
         tareaId,
         nombre,
         descripcion,
-        estado
+        estado,
+        expertoCc,
+        fechaEjecucion
     }
   }
 `;

@@ -9,14 +9,6 @@ import { GET_INVESTIGATIONS } from '../graphql/queries/investigacionTask/allInve
 
 import { investiTaskClient } from '../graphql/apolloClient';
 
-// Lista de investigaciones (puedes reemplazar con datos reales)
-const investigaciones = [
-  { nombre: 'Amazonas Norte', descripcion: 'Estudio de biodiversidad y clima.' },
-  { nombre: 'Ciénaga de Zapatosa', descripcion: 'Investigación en ecosistemas acuáticos.' },
-  { nombre: 'Paramo de Santurbán', descripcion: 'Evaluación de flora endémica.' },
-  { nombre: 'Serranía de la Macarena', descripcion: 'Diversidad genética de especies.' }
-];
-
 const Investigaciones = () => {
   const { data: investigationData, loading, error } = useQuery(GET_INVESTIGATIONS, {
     client: investiTaskClient,

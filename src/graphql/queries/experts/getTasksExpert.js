@@ -6,7 +6,10 @@ export const GET_TASKS_FOR_EXPERT = gql`
       tareaId
       nombre
       descripcion
-      estado
+      estado,
+      investigacionId {
+        investigacionId
+      }
     }
   }
 `;

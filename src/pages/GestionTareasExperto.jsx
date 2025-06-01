@@ -3,12 +3,13 @@ import { useParams } from 'react-router-dom';
 import '../styles/GestionTareas.css';
 import FormularioTarea from '../components/FormularioTarea';
 import ModalEstado from '../components/ModalEstado';
-import Navbarjefe from '../components/Navbarjefe';
+import Navbarjefe from '../components/Navbarexpertos';
 
 import { useQuery } from '@apollo/client';
 import { INVESTIGACION_FOR_NAME } from '../graphql/queries/investigacionTask/investigationForName';
 import { INFORMATION_ABOUT_TASK_FOR_ID_INVESTIGATION } from '../graphql/queries/investigacionTask/informationAboutTaskForIdInvestigation';
 import { EXPERTS_BY_INVESTIGATION_ID } from '../graphql/queries/teams/teamByInvestigationId';
+import { GET_TASKS_FOR_EXPERT } from '../graphql/queries/experts/getTasksExpert';
 
 import { investiTaskClient, expertsTeamClient } from '../graphql/apolloClient';
 
@@ -20,14 +21,24 @@ import { DELETE_TASK } from '../graphql/mutations/investigationTask/deleteTask';
 
 
 const GestionTareas = () => {
-  const { investigacion, expertoCc } = useParams();
+  const { expertoCc } = useParams();
   const [tareas, setTareas] = useState([]);
   const [expertos, setExpertos] = useState([]);
+  const [investigacionId, setInvestigacionId] = useState(null);
 
-  const { data: investigationData } = useQuery(INVESTIGACION_FOR_NAME, {
-    variables: { name: investigacion.replace('-',' ') },
+  const { data: getTasksForExpert } = useQuery(GET_TASKS_FOR_EXPERT, {
+    variables: { ccExperto: Number(expertoCc) },
     client: investiTaskClient
   });
+
+  useEffect(() => {
+    if (getTasksForExpert?.listTasksForExpert) {
+      console.log(getTasksForExpert.listTasksForExpert);
+      
+      setTareas(getTasksForExpert.listTasksForExpert);
+      setInvestigacionId(getTasksForExpert.listTasksForExpert[0]?.investigacionId?.investigacionId || null);
+    }
+  }, [getTasksForExpert]);
 
   const [updateTaskState] = useMutation(UPDATE_TASK_STATE, {
     client: investiTaskClient,
@@ -44,51 +55,24 @@ const GestionTareas = () => {
   const [deleteTask] = useMutation(DELETE_TASK, {
     client: investiTaskClient,
   });
-
-  const investigationId = investigationData?.investigacionForName;
-  console.log(investigationId);
   
-  const { data: tasksData, loading: loadingTasks, error: errorTasks } = useQuery(INFORMATION_ABOUT_TASK_FOR_ID_INVESTIGATION, {
-    variables: { idInvestigation: Number(investigationId) },
-    client: investiTaskClient,
-    skip: !investigationId,
-  });
 
-  const { data: expertsData, loading: loadingExperts, error: errorExperts } = useQuery(EXPERTS_BY_INVESTIGATION_ID, {
-    variables: { investigacionId: Number(investigationId) },
+const { data: expertsData, loading: loadingExperts, error: errorExperts } = useQuery(EXPERTS_BY_INVESTIGATION_ID, {
+    variables: { investigacionId: Number(investigacionId) },
     client: expertsTeamClient,
-    skip: !investigationId, 
+    skip: !investigacionId, 
   });
 
 
   useEffect(() => {
-    if (expertsData?.expertsByInvestigationId) {
+    if (expertsData?.investigacionId) {
       console.log(expertsData.expertsByInvestigationId);
       
       setExpertos(expertsData.expertsByInvestigationId);
     }
   }, [expertsData]);
 
-  useEffect(() => {
-  if (
-    tasksData?.informationAboutTaskForIdInvestigation &&
-    expertsData?.expertsByInvestigationId
-  ) {
-    const tareasConExpertos = tasksData.informationAboutTaskForIdInvestigation.map(task => {
-      const experto = expertsData.expertsByInvestigationId.find(
-        e => e.expertoCc === task.expertoCc
-      );
-      return {
-        ...task,
-        experto: experto || null, // puedes manejar si no hay match
-      };
-    });
 
-    setTareas(tareasConExpertos);
-  }
-}, [tasksData, expertsData]);
-
- 
 
   
   
@@ -227,27 +211,16 @@ const GestionTareas = () => {
     <div className='nav'>
       <Navbarjefe />
       <div className="gestion-container">
-        <h2>Gestión de Tareas - {investigacion.replace(/-/g, ' ').toUpperCase()}</h2>
+        <h2>Gestión de Tareas</h2>
 
         <div className="table-wrapper">
           <div className="table-controls">
-            <button
-              onClick={() => {
-                setModo('asignar');
-                setDatosTarea(null);
-                setFormVisible(true);
-              }}
-              className="icon-button"
-            >
-              ➕
-            </button>
           </div>
 
           <table className="tareas-table">
             <thead>
               <tr>
                 <th>Nombre de tarea</th>
-                <th>Expertos</th>
                 <th>Descripción</th>
                 <th>Estado</th>
                 <th>Acciones</th>
@@ -257,7 +230,6 @@ const GestionTareas = () => {
               {tareas.map((t, i) => (
                 <tr key={i}>
                   <td>{t.nombre}</td>
-                  <td>{t?.experto?.primerNombre+" "+t?.experto?.primerApellido || 'Sin asignar'}</td>
                   <td>{t.descripcion}</td>
                   <td style={{ color: getColor(t.estado) }}>{t.estado.toUpperCase()}</td>
                   <td className="acciones-cell">
@@ -266,27 +238,6 @@ const GestionTareas = () => {
                       onClick={() => setEstadoModal({ visible: true, index: t.tareaId })}
                     >
                       {getEstadoIcono(t.estado)} Estado
-                    </button>
-                    <button
-                      className="icono-btn"
-                      title="Editar"
-                      onClick={() => {
-                        setModo('editar');
-                        setDatosTarea({ ...t, index: t.tareaId });
-                        setFormVisible(true);
-                        console.log(formVisible);
-                        console.log(expertos);
-                        
-                      }}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="icono-btn"
-                      title="Eliminar"
-                      onClick={() => eliminarTarea(t.tareaId)}
-                    >
-                      🗑️
                     </button>
                   </td>
                 </tr>

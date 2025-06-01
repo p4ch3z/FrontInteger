@@ -7,6 +7,7 @@ import Investigaciones from './pages/Investigaciones';
 import Login from './pages/login';
 import InvestigacionesJefe from './pages/InvestigacionesJefe';
 import GestionTareas from './pages/GestionTareas';
+import GestionTareasExperto from './pages/GestionTareasExperto';
 import GestionNovedades from './pages/GestionNovedades';
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/novedades" element={<GestionNovedades />} />
         <Route path="/investigaciones" element={<Investigaciones />} />
         <Route path="/tareas/:investigacion" element={<GestionTareas />} />
+        <Route path="/tareasExperto/:expertoCc" element={<GestionTareasExperto />} />
       </Routes>
     </div>
   );
