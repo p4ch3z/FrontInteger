@@ -28,6 +28,7 @@ const GestionTareas = () => {
     variables: { name: investigacion.replace('-',' ') },
     client: investiTaskClient
   });
+  console.log(investigacion.replace('-',' '))
 
   const [updateTaskState] = useMutation(UPDATE_TASK_STATE, {
     client: investiTaskClient,

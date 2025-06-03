@@ -25,7 +25,7 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
   const { data: investigatorsData } = useQuery(GET_INVESTIGATORS, {
     client: expertsTeamClient,
   });
-  const { data: investigationData, loading, error } = useQuery(GET_INVESTIGATIONS, {
+  const { data: investigationData, loading, error, refetch: refetchInvestigations } = useQuery(GET_INVESTIGATIONS, {
     client: investiTaskClient,
   });
   const [createBrigade] = useMutation(CREATE_BRIGADE, {
@@ -74,6 +74,10 @@ const CrearBrigada = ({ onCreate, onCancel }) => {
         }
     
       }, [investigationData]);
+
+    useEffect(() => {
+      refetchInvestigations(); // <--- Esto forzará a obtener las investigaciones frescas
+    }, []);
 
   useEffect(() => {
     if (botanicData && botanicData.allExpertsBotanics) {  
