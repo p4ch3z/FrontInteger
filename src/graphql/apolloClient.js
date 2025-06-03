@@ -1,21 +1,21 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 export const investiTaskClient = new ApolloClient({
-  uri: "http://127.0.0.1:8000/graphql/",
+  uri: import.meta.env.VITE_INVESTITASK_URI,
   cache: new InMemoryCache(),
 });
 
 export const expertsTeamClient = new ApolloClient({
-  uri: "http://127.0.0.1:8001/graphql/",
+  uri: import.meta.env.VITE_EXPERTSTEAM_URI,
   cache: new InMemoryCache(),
 });
 
 export const newsPhotoClient = new ApolloClient({
-  uri: "http://127.0.0.1:8002/graphql/",
+  uri: import.meta.env.VITE_NEWSPHOTO_URI,
   cache: new InMemoryCache(),
 });
 
 export const authClient = new ApolloClient({
-  uri: "http://127.0.0.1:8003/graphql/",
+  uri: import.meta.env.VITE_AUTH_URI,
   cache: new InMemoryCache(),
 });

@@ -47,7 +47,7 @@ const Investigaciones = () => {
         fechaInicio: inv.fechaInicio,
         fechaFin: inv.fechaFin,
         ubicacion: inv.coordenadasGeograficas,
-        informeUrl: "#"
+        informeUrl: import.meta.env.VITE_GENERAR_INFORME+ inv.investigacionId,
       }));
       setInvestigaciones(mapped);
     }
