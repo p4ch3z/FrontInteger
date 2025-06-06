@@ -67,10 +67,16 @@ const EditarInvestigacion = ({ data, onUpdate, onCancel }) => {
           <input name="nombre" value={form.nombre} onChange={handleChange} required />
 
           <label>Fecha inicio</label>
-          <input type="date" name="fechaInicio" value={form.fechaInicio} onChange={handleChange} required />
+          <input type="date" name="fechaInicio" value={form.fechaInicio} onChange={handleChange} required 
+          max={form.fechaFin || ''}
+          min={new Date().toISOString().split('T')[0]}
+          />
 
           <label>Fecha fin</label>
-          <input type="date" name="fechaFin" value={form.fechaFin} onChange={handleChange} required />
+          <input type="date" name="fechaFin" value={form.fechaFin} onChange={handleChange} required 
+          min={form.fechaInicio || ''}
+          max={new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]}
+          />
 
           <label>Ubicacion (X, Y)</label>
           <input name="ubicacion" value={form.ubicacion} onChange={handleChange} required />

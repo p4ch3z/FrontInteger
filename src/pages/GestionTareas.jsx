@@ -224,6 +224,13 @@ const GestionTareas = () => {
     );
   };
 
+  useEffect(() => {
+  if (formVisible && expertos.length === 0) {
+    alert("No hay expertos disponibles.");
+    setFormVisible(false);
+  }
+}, [formVisible, expertos]);
+
   return (
     <div className='nav'>
       <Navbarjefe />

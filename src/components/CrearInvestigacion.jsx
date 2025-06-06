@@ -103,6 +103,8 @@ const CrearInvestigacion = ({ onCreate, onCancel }) => {
             name="fechaInicio"
             value={form.fechaInicio || ''}
             onChange={handleChange}
+            max={form.fechaFin || ''}
+            min={new Date().toISOString().split('T')[0]}
             required
           />
 
@@ -111,6 +113,8 @@ const CrearInvestigacion = ({ onCreate, onCancel }) => {
             type="date"
             name="fechaFin"
             value={form.fechaFin || ''}
+            min={form.fechaInicio || new Date().toISOString().split('T')[0]}
+            max={new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]}
             onChange={handleChange}
             required
           />
